@@ -20,7 +20,7 @@ CompositorNotifier::CompositorNotifier(QObject *parent) : QObject(parent) {
 
     auto *interface = new QDBusInterface("org.kde.KWin", "/Compositor");
 
-    connect(settings, SIGNAL(accepted()), SLOT(updateTrayIcon()));
+    connect(settings, SIGNAL(accepted()), this, SLOT(updateTrayIcon()));
     connect(interface, SIGNAL(compositingToggled(bool)), this, SLOT(updateTrayIcon(bool)));
     connect(tray, SIGNAL(activateRequested(bool,QPoint)), this, SLOT(trayClicked(bool,QPoint)));
     connect(settingsAction, SIGNAL(triggered(bool)), this, SLOT(peepSettings()));
@@ -44,7 +44,8 @@ void CompositorNotifier::setCompositorEnabled(bool active) {
 }
 
 Q_SLOT void CompositorNotifier::trayClicked(bool active, QPoint pos) {
-    toggleCompositorEnabled();
+    if(!pos.isNull())
+        toggleCompositorEnabled();
 }
 
 Q_SLOT void CompositorNotifier::updateTrayIcon(bool active) {
